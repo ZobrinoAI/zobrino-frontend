@@ -1,0 +1,50 @@
+import { useEffect, useState } from "react";
+
+export default function Dashboard() {
+  const [status, setStatus] = useState("Cargando...");
+  const [minutes, setMinutes] = useState(null);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const res = await fetch("https://api.zobrino.com/healthz");
+        const data = await res.json();
+        if (data.ok) {
+          setStatus("Conectado al servidor");
+        } else {
+          setStatus("Servidor sin respuesta");
+        }
+
+        // Aquí simulamos minutos del usuario (luego vendrán desde Firestore)
+        setMinutes({ remaining: 120, plan: "Intermedio" });
+      } catch (err) {
+        setStatus("Error de conexión");
+      }
+    }
+    fetchData();
+  }, []);
+
+  return (
+    <main style={{ textAlign: "center", marginTop: "50px" }}>
+      <h1>Consola del Usuario</h1>
+      <p>{status}</p>
+
+      {minutes && (
+        <div
+          style={{
+            marginTop: "30px",
+            display: "inline-block",
+            border: "1px solid #ccc",
+            borderRadius: "10px",
+            padding: "20px",
+            background: "#fff",
+            boxShadow: "0 0 5px rgba(0,0,0,0.1)"
+          }}
+        >
+          <h2>Plan Actual: {minutes.plan}</h2>
+          <h3>Minutos Restantes: {minutes.remaining}</h3>
+        </div>
+      )}
+    </main>
+  );
+}
